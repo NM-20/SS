@@ -1,6 +1,8 @@
 ﻿#ifndef __SSLOADER_SSEE__
 #define __SSLOADER_SSEE__
 
+#include <TPL/GenericLibrary/STL/TPLStlAllocate.h>
+
 #include "sstypes.h"
 
 #include "SsEffectBehavior.h"
@@ -106,7 +108,7 @@ private:
 
 public:
 	SsEffectNode* root;
-	std::vector<SsEffectNode*> nodeList;
+	TPL::StlVector<SsEffectNode*> nodeList;
 	int			lockRandSeed; 	 // ランダムシード固定値
 	bool    	isLockRandSeed;  // ランダムシードを固定するか否か
 	int			fps;             //
@@ -130,7 +132,7 @@ public:
 	//アクセス
 	SsEffectNode* GetRoot(){ return root; }
 
-	const std::vector<SsEffectNode*>& getNodeList()
+	const TPL::StlVector<SsEffectNode*>& getNodeList()
 	{
 		return nodeList;
 	}

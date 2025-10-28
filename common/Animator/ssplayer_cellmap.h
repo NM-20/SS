@@ -1,6 +1,8 @@
 ﻿#ifndef __SSPLAYER_CELLMAP__
 #define __SSPLAYER_CELLMAP__
 
+#include <TPL/GenericLibrary/STL/TPLStlAllocate.h>
+
 #include "../../SS6PlayerTypes.h"
 
 namespace ss
@@ -15,9 +17,9 @@ struct SsCell
 	float		pivot_Y;		//原点補正
 	TextuerData texture;
 	ss::SSRect	rect;
-	std::string texname;
+	TPL::StlString texname;
 	int			cellIndex;
-	std::string cellName;
+	TPL::StlString cellName;
 	float		u1;
 	float		v1;
 	float		u2;

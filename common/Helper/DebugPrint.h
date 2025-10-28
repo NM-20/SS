@@ -9,10 +9,10 @@ namespace ss
 void DEBUG_PRINTF( const char* strFormat, ...   );
 
 struct ThrowErrorMessage{
-	std::string message;
+	TPL::StlString message;
 	int	error_no;
 
-	ThrowErrorMessage( int no , std::string str ){ error_no = no ; message = str; }
+	ThrowErrorMessage( int no , TPL::StlString str ){ error_no = no ; message = str; }
 };
 
 
@@ -21,7 +21,7 @@ struct ThrowErrorMessage{
 THROW_ERROR_MESSAGE_MAIN( str , __FILE__ , __LINE__ );\
 }\
 
-void	THROW_ERROR_MESSAGE_MAIN( std::string str , char* fname , size_t line );
+void	THROW_ERROR_MESSAGE_MAIN( TPL::StlString str , char* fname , size_t line );
 
 };
 

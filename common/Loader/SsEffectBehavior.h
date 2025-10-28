@@ -1,6 +1,8 @@
 ﻿#ifndef __SSEFFECTBEHAVIOR__
 #define __SSEFFECTBEHAVIOR__
 
+#include <TPL/GenericLibrary/STL/TPLStlAllocate.h>
+
 #include "SsEffectElement.h"
 #include "../Animator/ssplayer_cellmap.h"
 #include "sstypes.h"
@@ -14,7 +16,7 @@ class SsEffectRenderer;
 class SsEffectBehavior
 {
 public:
-	std::vector<SsEffectElementBase*> plist;
+	TPL::StlVector<SsEffectElementBase*> plist;
 
 public:
 	int								CellIndex;	//プレイヤー専用に追加

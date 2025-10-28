@@ -432,6 +432,7 @@ struct TextuerData
 	long handle;
 	int size_w;
 	int size_h;
+	char pad_000C[0x0004];
 };
 
 

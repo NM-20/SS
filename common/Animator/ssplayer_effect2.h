@@ -8,7 +8,7 @@
 #include "ssplayer_cellmap.h"
 #include "ssplayer_PartState.h"
 
-//SsVector‚È‚Ç
+//SsVectorï¿½È‚ï¿½
 //#include "SsUtility.h"
 
 //#include "ISSEffectRender.h"
@@ -63,15 +63,15 @@ struct emitPattern
 };
 
 
-//ÅI•`‰æ—pƒf[ƒ^
+//ï¿½ÅIï¿½`ï¿½ï¿½pï¿½fï¿½[ï¿½^
 struct particleDrawData
 {
 	int	id;
 	int	pid;
-	int	stime;		//¶¬‚³‚ê‚½ŠJnŠÔ
+	int	stime;		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Jï¿½nï¿½ï¿½ï¿½ï¿½
 	int lifetime;
 
-	//•`‰æ—pƒ[ƒN
+	//ï¿½`ï¿½ï¿½pï¿½ï¿½ï¿½[ï¿½N
 	float	x;
 	float	y;
 	float	rot;
@@ -83,7 +83,7 @@ struct particleDrawData
 
 
 #if 0
-//ƒŠƒ“ƒOƒoƒbƒtƒ@‚¾‚ªÀ‚Í‚à‚¤‚¢‚ç‚È‚¢‚©‚à
+//ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½
 template<class mytype>
 class particleRingBuffer
 {
@@ -143,17 +143,17 @@ public:
 #endif
 
 
-//ƒGƒ~ƒbƒ^[‚ª‚Âƒpƒ‰ƒ[ƒ^
-//ƒGƒfƒBƒ^‚âƒtƒ@ƒCƒ‹‚©‚ç“ü—Í‚³‚ê‚é
+//ï¿½Gï¿½~ï¿½bï¿½^ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Âƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^
+//ï¿½Gï¿½fï¿½Bï¿½^ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½
 struct emitterParameter
 {
 	int	life;
 	int interval;
-	int	emitnum;		//ˆê“x‚É”ro‚³‚ê‚éŒÂ”
-	int emitmax;		//Å‘å”ro”
-	int	particleLife;	//¶¬‚³‚ê‚éƒp[ƒeƒBƒNƒ‹‚Ìõ–½
-	int particleLife2;	//õ–½Å‘å’l
-    bool Infinite;      //–³ŒÀ”­¶
+	int	emitnum;		//ï¿½ï¿½xï¿½É”rï¿½oï¿½ï¿½ï¿½ï¿½ï¿½Âï¿½
+	int emitmax;		//ï¿½Å‘ï¿½rï¿½oï¿½ï¿½
+	int	particleLife;	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½[ï¿½eï¿½Bï¿½Nï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
+	int particleLife2;	//ï¿½ï¿½ï¿½ï¿½ï¿½Å‘ï¿½l
+    bool Infinite;      //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	int	loopStart;
 	int loopEnd;
@@ -161,29 +161,29 @@ struct emitterParameter
 	int	loopGen;
 
 
-	//ƒeƒXƒg—pƒfƒtƒHƒ‹ƒg
+	//ï¿½eï¿½Xï¿½gï¿½pï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½g
 	emitterParameter() : life(15),interval(1),emitnum(2),emitmax(32),particleLife(15),particleLife2(15),Infinite(false){}
 
 };
 
 
-//ƒp[ƒeƒBƒNƒ‹‚ª‚Âƒpƒ‰ƒ[ƒ^
-//ƒGƒfƒBƒ^‚âƒtƒ@ƒCƒ‹‚©‚ç“ü—Í‚³‚ê‚é
+//ï¿½pï¿½[ï¿½eï¿½Bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^
+//ï¿½Gï¿½fï¿½Bï¿½^ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½
 struct particleParameter
 {
 
 	SsVector2 	scale;
 
-	SsU8Color   startcolor; //ƒXƒ^[ƒg‚ÌƒJƒ‰[
-	SsU8Color   endcolor;   //I—¹‚ÌƒJƒ‰[
+	SsU8Color   startcolor; //ï¿½Xï¿½^ï¿½[ï¿½gï¿½ï¿½ï¿½ÌƒJï¿½ï¿½ï¿½[
+	SsU8Color   endcolor;   //ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ÌƒJï¿½ï¿½ï¿½[
 
-	//‰‘¬
-	float		speed;		//‰‘¬
-	float		speed2;		//‰‘¬Å‘å’l
+	//ï¿½ï¿½ï¿½ï¿½
+	float		speed;		//ï¿½ï¿½ï¿½ï¿½
+	float		speed2;		//ï¿½ï¿½ï¿½ï¿½ï¿½Å‘ï¿½l
 
 
-	float		angle;		  //Œü‚¢‚Ä‚éŠp“x
-	float       angleVariance;//•Ï·
+	float		angle;		  //ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½pï¿½x
+	float       angleVariance;//ï¿½Ïï¿½
 
 	bool		useGravity;
 	SsVector2	gravity;
@@ -252,7 +252,7 @@ struct particleParameter
 };
 
 
-//ƒGƒ~ƒbƒ^“®ìƒNƒ‰ƒX
+//ï¿½Gï¿½~ï¿½bï¿½^ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½X
 class SsEffectEmitter
 {
 public:
@@ -269,14 +269,14 @@ public:
 	int					emitterSeed;
 	int					seedOffset;
 
-	//¶¬—p‚ÌƒŠƒ“ƒOƒoƒbƒtƒ@
-	std::vector<emitPattern>    	_emitpattern;
-	std::vector<int>				_offsetPattern;
+	//ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½Ìƒï¿½ï¿½ï¿½ï¿½Oï¿½oï¿½bï¿½tï¿½@
+	TPL::StlVector<emitPattern>    	_emitpattern;
+	TPL::StlVector<int>				_offsetPattern;
 
     particleExistSt*     particleExistList;
 
 
-	//–‘OŒvZƒoƒbƒtƒ@
+	//ï¿½ï¿½ï¿½Oï¿½vï¿½Zï¿½oï¿½bï¿½tï¿½@
 	//particleLifeSt*				particleList;
 	int							particleIdMax;
 
@@ -290,8 +290,8 @@ public:
 
     int							_parentIndex;
 
-	SsCell*						refCell;    //•`‰æ—pƒZƒ‹
-	SsEffectBehavior*           refData;	//ƒf[ƒ^XV—p
+	SsCell*						refCell;    //ï¿½`ï¿½ï¿½pï¿½Zï¿½ï¿½
+	SsEffectBehavior*           refData;	//ï¿½fï¿½[ï¿½^ï¿½Xï¿½Vï¿½p
 
 	size_t						globaltime;
 	size_t						seedTableLen;
@@ -303,7 +303,7 @@ public:
 //			particleList(0),
 			_parentIndex(-1),
 			seedList(0),
-			particleListBufferSize(180*100),  //¶¬o—ˆ‚éƒp[ƒeƒBƒNƒ‹‚ÌÅ‘å’l
+			particleListBufferSize(180*100),  //ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½pï¿½[ï¿½eï¿½Bï¿½Nï¿½ï¿½ï¿½ÌÅ‘ï¿½l
 			_emitpattern(0),
 			particleExistList(0),
 			globaltime(0),
@@ -339,12 +339,12 @@ public:
 
 	int	getTimeLength() { return emitter.life + ( emitter.particleLife + emitter.particleLife2); }
 
-	//Œ»İŠÔ‚©‚çYo‚³‚ê‚éˆÊ’u‚ğ‹‚ß‚é
-	//time•Ï”‚©‚ç‹‚ß‚ç‚ê‚é®‚Æ‚·‚é
+	//ï¿½ï¿½ï¿½İï¿½ï¿½Ô‚ï¿½ï¿½ï¿½Yï¿½oï¿½ï¿½ï¿½ï¿½ï¿½Ê’uï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
+	//timeï¿½Ïï¿½ï¿½ï¿½ï¿½ç‹ï¿½ß‚ï¿½ï¿½é®ï¿½Æ‚ï¿½ï¿½ï¿½
 	void	updateParticle(float time, particleDrawData* p, bool recalc = false );
 
-	//ƒp[ƒeƒBƒNƒ‹‚Ì”­¶ŠÔŠu‚ğ–‘OŒvZ‚·‚é
-	//‚±‚±‚Åo—Í‚ªŠm’è‚·‚é
+	//ï¿½pï¿½[ï¿½eï¿½Bï¿½Nï¿½ï¿½ï¿½Ì”ï¿½ï¿½ï¿½ï¿½ÔŠuï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Åoï¿½Í‚ï¿½ï¿½mï¿½è‚·ï¿½ï¿½
 
 	void	precalculate2();
 
@@ -355,15 +355,15 @@ class SsEffectRenderV2
 {
 public:
 
-	//ƒGƒtƒFƒNƒg‚Ìƒpƒ‰ƒ[ƒ^ƒf[ƒ^
+	//ï¿½Gï¿½tï¿½Fï¿½Nï¿½gï¿½Ìƒpï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½fï¿½[ï¿½^
 	SsEffectModel*		effectData;
 
-	//Model‚É‹LÚ‚³‚ê‚Ä‚¢‚éƒGƒ~ƒbƒ^‚ÌƒŠƒXƒg
-	std::vector<SsEffectEmitter*>   emmiterList;
+	//Modelï¿½É‹Lï¿½Ú‚ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Gï¿½~ï¿½bï¿½^ï¿½Ìƒï¿½ï¿½Xï¿½g
+	TPL::StlVector<SsEffectEmitter*>   emmiterList;
 
-	std::vector<SsEffectEmitter*>   updateList;
+	TPL::StlVector<SsEffectEmitter*>   updateList;
 
-	//ƒ‰ƒ“ƒ_ƒ€ƒV[ƒh
+	//ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½Vï¿½[ï¿½h
 	u32				mySeed;
 
 	SsVector3		layoutPosition;
@@ -375,7 +375,7 @@ public:
 
 	size_t          effectTimeLength;
 
-    bool			Infinite;	//–³ŒÀ‚É”­¶o—ˆ‚é‚©‚Ç‚¤‚©
+    bool			Infinite;	//ï¿½ï¿½ï¿½ï¿½ï¿½É”ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½
 
 	SsPartState*	parentState;
 
@@ -386,10 +386,10 @@ public:
 	bool			m_isLoop;
 
 	int				seedOffset;
-	//	SsCellMapList*	curCellMapManager;/// ƒZƒ‹ƒ}ƒbƒv‚ÌƒŠƒXƒgiƒAƒjƒƒfƒR[ƒ_[‚©‚ç‚à‚ç‚¤
+	//	SsCellMapList*	curCellMapManager;/// ï¿½Zï¿½ï¿½ï¿½}ï¿½bï¿½vï¿½Ìƒï¿½ï¿½Xï¿½gï¿½iï¿½Aï¿½jï¿½ï¿½ï¿½fï¿½Rï¿½[ï¿½_ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç‚¤
 	bool		_isWarningData;
 
-	//e‚É‚È‚éƒXƒvƒ‰ƒCƒg
+	//ï¿½eï¿½É‚È‚ï¿½Xï¿½vï¿½ï¿½ï¿½Cï¿½g
 	bool _isContentScaleFactorAuto;
 	CustomSprite						*_parentSprite;
 
@@ -479,7 +479,7 @@ public:
 	virtual bool	isInfinity() { return Infinite; }
 	virtual bool	isWarning() { return _isWarningData; }
 
-	//e‚É‚È‚éƒXƒvƒ‰ƒCƒg‚ğİ’è‚·‚é
+	//ï¿½eï¿½É‚È‚ï¿½Xï¿½vï¿½ï¿½ï¿½Cï¿½gï¿½ï¿½İ’è‚·ï¿½ï¿½
 	void setContentScaleEneble(bool eneble) { _isContentScaleFactorAuto = eneble; }
 	void setParentSprite(CustomSprite* sprite) { _parentSprite = sprite; }
 

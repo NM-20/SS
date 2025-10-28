@@ -2,6 +2,8 @@
 #define __SSPLAYER_EFFECT__
 
 #include <list>
+#include <TPL/GenericLibrary/STL/TPLStlAllocate.h>
+
 #include "../../SS6Player.h"
 #include "../loader/ssloader.h"
 #include "MersenneTwister.h"
@@ -161,7 +163,7 @@ public:
 	SsRenderBlendType::_enum       blendType;
 
 
-	std::list<SsEffectRenderAtom*> drawlist;
+	TPL::StlList<SsEffectRenderAtom*> drawlist;
 
 
 	SsEffectDrawBatch() : priority(0), dispCell(0), targetNode(0) {}
@@ -443,10 +445,10 @@ public:
 	SsPartState*		parentState;
 
 
- 	std::vector<SsEffectRenderAtom*> updatelist;
-	std::vector<SsEffectRenderAtom*> createlist;
+ 	TPL::StlVector<SsEffectRenderAtom*> updatelist;
+	TPL::StlVector<SsEffectRenderAtom*> createlist;
 
-    std::list<SsEffectDrawBatch*>  drawBatchList;
+    TPL::StlList<SsEffectDrawBatch*>  drawBatchList;
 
 	//cocos2d-x用エフェクトスプライト
 	bool _isContentScaleFactorAuto;

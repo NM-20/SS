@@ -92,6 +92,9 @@ https://github.com/SpriteStudio/SpriteStudio6-SDK
 #include <assert.h>
 #include <time.h>
 #include <functional>
+#include <framework/ui/system/APP_DRAW_TYPE.h>
+#include <utility/container/StaticArray.h>
+#include <TPL/GenericLibrary/STL/TPLStlAllocate.h>
 
 //エフェクト関連
 #include "./Common/loader/ssloader.h"
@@ -107,10 +110,6 @@ https://github.com/SpriteStudio/SpriteStudio6-SDK
 namespace ss
 {
 class CustomSprite;
-class CellCache;
-class CellRef;
-class AnimeCache;
-class AnimeRef;
 class ResourceSet;
 struct ProjectData;
 class SSSize;
@@ -149,6 +148,70 @@ extern void get_uv_rotation(float *u, float *v, float cu, float cv, float deg);
 	#define SSLOGERROR(format,...)  do {} while (0)
 #endif
 
+/**
+ * CellRef
+ */
+struct CellRef
+{
+	const Cell* cell;
+	TextuerData texture;
+	SSRect rect;
+	TPL::StlString texname;
+};
+
+/**
+ * CellCache
+ */
+class CellCache
+{
+protected:
+	TPL::StlVector<TPL::StlString>			_texname;
+	TPL::StlVector<TextuerData>			    _textures;
+	TPL::StlVector<CellRef*>				    _refs;
+};
+
+/**
+* EffectCache
+*/
+class EffectCache
+{
+protected:
+	TPL::StlMap<TPL::StlString, SsEffectModel*>		_dic;
+};
+
+/**
+ * AnimeRef
+ */
+struct AnimeRef
+{
+	TPL::StlString	packName;
+	TPL::StlString	animeName;
+	const AnimationData*	animationData;
+	const AnimePackData*	animePackData;
+};
+
+/**
+ * AnimeCache
+ */
+class AnimeCache
+{
+public:
+	TPL::StlMap<TPL::StlString, AnimeRef*>	_dic;
+};
+
+/**
+ * ResourceSet
+ */
+struct ResourceSet
+{
+	const ProjectData* data;
+	bool isDataAutoRelease;
+	EffectCache* effectCache;
+	CellCache* cellCache;
+	AnimeCache* animeCache;
+
+	virtual ~ResourceSet();
+};
 
 /**
 * State
@@ -156,13 +219,12 @@ extern void get_uv_rotation(float *u, float *v, float cu, float cv, float deg);
 */
 struct State
 {
-	std::string name;				/// パーツ名
+	const char *name;				/// パーツ名
 	int flags;						/// このフレームで更新が行われるステータスのフラグ1
 	int flags2;						/// このフレームで更新が行われるステータスのフラグ2
 	int cellIndex;					/// パーツに割り当てられたセルの番号
 	float x;						/// SSアトリビュート：X座標
 	float y;						/// SSアトリビュート：Y座標
-	float z;						/// SSアトリビュート：Z座標
 	float pivotX;					/// 原点Xオフセット＋セルに設定された原点オフセットX
 	float pivotY;					/// 原点Yオフセット＋セルに設定された原点オフセットY
 	float rotationX;				/// X回転
@@ -170,30 +232,19 @@ struct State
 	float rotationZ;				/// Z回転
 	float scaleX;					/// Xスケール
 	float scaleY;					/// Yスケール
-	float localscaleX;				/// Xローカルスケール
-	float localscaleY;				/// Yローカルスケール
 	int opacity;					/// 不透明度（0～255）
-	int localopacity;				/// ローカル不透明度（0～255）
 	float size_X;					/// SSアトリビュート：Xサイズ
 	float size_Y;					/// SSアトリビュート：Xサイズ
-	float uv_move_X;				/// SSアトリビュート：UV X移動
-	float uv_move_Y;				/// SSアトリビュート：UV Y移動
-	float uv_rotation;				/// SSアトリビュート：UV 回転
-	float uv_scale_X;				/// SSアトリビュート：UV Xスケール
-	float uv_scale_Y;				/// SSアトリビュート：UV Yスケール
-	float boundingRadius;			/// SSアトリビュート：当たり半径
 	int partsColorFunc;				/// SSアトリビュート：パーツカラーのブレンド方法
 	int partsColorType;				/// SSアトリビュート：パーツカラーの単色か頂点カラーか。
 	int masklimen;					/// マスク強度
-	int priority;					/// 優先度
-	bool flipX;						/// 横反転（親子関係計算済）
-	bool flipY;						/// 縦反転（親子関係計算済）
 	bool isVisibled;				/// 非表示（親子関係計算済）
 	SSV3F_C4B_T2F_Quad quad;		/// 頂点データ、座標、カラー値、UVが含まれる（頂点変形、サイズXY、UV移動XY、UVスケール、UV回転、反転が反映済）
 	SSPARTCOLOR_RATE rate;			/// パーツカラーに含まれるレート
 	TextuerData texture;			/// セルに対応したテクスチャ番号（ゲーム側で管理している番号を設定する）
 	SSRect rect;					/// セルに対応したテクスチャ内の表示領域（開始座標、幅高さ）
 	int blendfunc;					/// パーツに設定されたブレンド方法
+	char pad_00EC[0x0004];
 	float mat[16];					/// パーツの位置を算出するためのマトリクス（親子関係計算済）
 	//再生用パラメータ
 	float Calc_rotationX;			/// X回転（親子関係計算済）
@@ -214,8 +265,6 @@ struct State
 	int			effectValue_startTime;
 	float		effectValue_speed;
 	int			effectValue_loopflag;
-	//メッシュデータ
-	std::vector<SsVector3> meshVertexPoint;
 
 	void init()
 	{
@@ -223,7 +272,6 @@ struct State
 		cellIndex = 0;
 		x = 0.0f;
 		y = 0.0f;
-		z = 0.0f;
 		pivotX = 0.0f;
 		pivotY = 0.0f;
 		rotationX = 0.0f;
@@ -231,20 +279,10 @@ struct State
 		rotationZ = 0.0f;
 		scaleX = 1.0f;
 		scaleY = 1.0f;
-		localscaleX = 1.0f;
-		localscaleY = 1.0f;
 		opacity = 255;
-		localopacity = 255;
 		size_X = 1.0f;
 		size_Y = 1.0f;
-		uv_move_X = 0.0f;
-		uv_move_Y = 0.0f;
-		uv_rotation = 0.0f;
-		uv_scale_X = 1.0f;
-		uv_scale_Y = 1.0f;
-		boundingRadius = 0.0f;
 		masklimen = 0;
-		priority = 0;
 		partsColorFunc = 0;
 		partsColorType = 0;
 		rate.oneRate = 1.0f;
@@ -252,8 +290,6 @@ struct State
 		rate.vartTRRate = 1.0f;
 		rate.vartBLRate = 1.0f;
 		rate.vartBRRate = 1.0f;
-		flipX = false;
-		flipY = false;
 		isVisibled = false;
 		memset(&quad, 0, sizeof(quad));
 		texture.handle = 0;
@@ -282,8 +318,6 @@ struct State
 		Calc_scaleX = 1.0f;
 		Calc_scaleY = 1.0f;
 		Calc_opacity = 255;
-
-		meshVertexPoint.clear();
 	}
 
 	State() { init(); }
@@ -330,8 +364,8 @@ public:
 	//メッシュ情報
 	bool					_meshIsBind;		//バインドされたメッシュか？
 	int						_meshVertexSize;	//メッシュの頂点サイズ
-	std::vector<SsVector2>	_meshVertexUV;		//メッシュのUV
-	std::vector<SsVector3>	_meshIndices;		//メッシュの頂点順
+	TPL::StlVector<SsVector2>	_meshVertexUV;		//メッシュのUV
+	TPL::StlVector<SsVector3>	_meshIndices;		//メッシュの頂点順
 	float*					_mesh_uvs;			// UVバッファ
 	float*					_mesh_colors;		// カラーバッファ
 	float*					_mesh_vertices;		// 座標バッファ
@@ -412,7 +446,6 @@ public:
 		setStateValue(_state.cellIndex, state.cellIndex);
 		setStateValue(_state.x, state.x);
 		setStateValue(_state.y, state.y);
-		setStateValue(_state.z, state.z);
 		setStateValue(_state.pivotX, state.pivotX);
 		setStateValue(_state.pivotY, state.pivotY);
 		setStateValue(_state.rotationX, state.rotationX);
@@ -420,23 +453,11 @@ public:
 		setStateValue(_state.rotationZ, state.rotationZ);
 		setStateValue(_state.scaleX, state.scaleX);
 		setStateValue(_state.scaleY, state.scaleY);
-		setStateValue(_state.localscaleX, state.localscaleX);
-		setStateValue(_state.localscaleY, state.localscaleY);
 		setStateValue(_state.opacity, state.opacity);
-		setStateValue(_state.localopacity, state.localopacity);
 		setStateValue(_state.size_X, state.size_X);
 		setStateValue(_state.size_Y, state.size_Y);
-		setStateValue(_state.uv_move_X, state.uv_move_X);
-		setStateValue(_state.uv_move_Y, state.uv_move_Y);
-		setStateValue(_state.uv_rotation, state.uv_rotation);
-		setStateValue(_state.uv_scale_X, state.uv_scale_X);
-		setStateValue(_state.uv_scale_Y, state.uv_scale_Y);
-		setStateValue(_state.boundingRadius, state.boundingRadius);
 		setStateValue(_state.masklimen, state.masklimen);
-		setStateValue(_state.priority, state.priority);
 		setStateValue(_state.isVisibled, state.isVisibled);
-		setStateValue(_state.flipX, state.flipX);
-		setStateValue(_state.flipY, state.flipY);
 		setStateValue(_state.blendfunc, state.blendfunc);
 		setStateValue(_state.partsColorFunc, state.partsColorFunc);
 		setStateValue(_state.partsColorType, state.partsColorType);
@@ -464,10 +485,6 @@ public:
 		_state.Calc_scaleX = state.Calc_scaleX;
 		_state.Calc_scaleY = state.Calc_scaleY;
 		_state.Calc_opacity = state.Calc_opacity;
-
-		_state.meshVertexPoint.clear();
-		_state.meshVertexPoint = state.meshVertexPoint;
-
 	}
 
 
@@ -502,7 +519,7 @@ enum {
 class ResourceManager
 {
 public:
-	static const std::string s_null;
+	static const TPL::StlString s_null;
 
 	/**
 	 * デフォルトインスタンスを取得します.
@@ -531,7 +548,7 @@ public:
 	*                       または imageBaseDir で画像のあるフォルダを指定してください。
 	* @return dataKey
 	*/
-	std::string addData(const std::string& ssbpFilepath, const std::string& imageBaseDir = s_null, const std::string& zipFilepath = s_null, bool imageZipLoad = true);
+	TPL::StlString addData(const TPL::StlString& ssbpFilepath, const TPL::StlString& imageBaseDir = s_null, const TPL::StlString& zipFilepath = s_null, bool imageZipLoad = true);
 
 	/**
 	 * ssbpファイルを読み込み管理対象とします.
@@ -543,7 +560,7 @@ public:
 	 * @param  imageZipLoad  上記 addData のコメントを参照してください。
 	 * @return dataKey
 	 */
-	std::string addDataWithKey(const std::string& dataKey, const std::string& ssbpFilepath, const std::string& imageBaseDir = s_null, const std::string& zipFilepath = s_null, bool imageZipLoad = true);
+	TPL::StlString addDataWithKey(const TPL::StlString& dataKey, const TPL::StlString& ssbpFilepath, const TPL::StlString& imageBaseDir = s_null, const TPL::StlString& zipFilepath = s_null, bool imageZipLoad = true);
 
 	/**
 	 * 指定されたssbpデータを管理対象とします.
@@ -555,7 +572,7 @@ public:
 	 * @param  imageZipLoad  上記 addData のコメントを参照してください。
 	 * @return dataKey
 	 */
-	std::string addData(const std::string& dataKey, const ProjectData* data, const std::string& imageBaseDir = s_null, const std::string& zipFilepath = s_null, bool imageZipLoad = true);
+	TPL::StlString addData(const TPL::StlString& dataKey, const ProjectData* data, const TPL::StlString& imageBaseDir = s_null, const TPL::StlString& zipFilepath = s_null, bool imageZipLoad = true);
 
 	/**
 	 * 指定データを解放します.
@@ -563,7 +580,7 @@ public:
 	 *
 	 * @param  dataKey
 	 */
-	void removeData(const std::string& dataKey);
+	void removeData(const TPL::StlString& dataKey);
 
 	/**
 	 * 全てのデータを解放します.
@@ -573,12 +590,12 @@ public:
 	/**
 	* 名前に対応するデータ取得します.
 	*/
-	ResourceSet* getData(const std::string& dataKey);
+	ResourceSet* getData(const TPL::StlString& dataKey);
 
 	/**
 	* ssbpに含まれるアニメーション名を取得します.
 	*/
-	std::vector<std::string> getAnimeName(const std::string& dataKey);
+	TPL::StlVector<TPL::StlString> getAnimeName(const TPL::StlString& dataKey);
 		
 	/**
 	* 指定したセルマップのテクスチャを変更します.
@@ -605,7 +622,7 @@ public:
 	* @param  animeName      ssae/モーション名
 	* @return アニメーションの開始フレーム（存在しない場合はアサート）
 	*/
-	int getStartFrame(std::string ssbpName, std::string animeName);
+	int getStartFrame(TPL::StlString ssbpName, TPL::StlString animeName);
 
 	/**
 	* 読み込んでいるssbpからアニメーションの終了フレーム数を取得します。
@@ -613,7 +630,7 @@ public:
 	* @param  animeName      ssae/モーション名
 	* @return アニメーションの終了フレーム（存在しない場合はアサート）
 	*/
-	int getEndFrame(std::string ssbpName, std::string animeName);
+	int getEndFrame(TPL::StlString ssbpName, TPL::StlString animeName);
 
 	/**
 	* 読み込んでいるssbpからアニメーションの総フレーム数を取得します。
@@ -621,7 +638,7 @@ public:
 	* @param  animeName      ssae/モーション名
 	* @return アニメーションの総フレーム（存在しない場合はアサート）
 	*/
-	int getTotalFrame(std::string ssbpName, std::string animeName);
+	int getTotalFrame(TPL::StlString ssbpName, TPL::StlString animeName);
 
 	/**
 	* 名前が登録されていればtrueを返します
@@ -629,7 +646,7 @@ public:
 	* @param dataKey
 	* @return
 	*/
-	bool isDataKeyExists(const std::string& dataKey);
+	bool isDataKeyExists(const TPL::StlString& dataKey);
 
 	/**
 	 * 新たなResourceManagerインスタンスを構築します.
@@ -643,7 +660,7 @@ public:
 	virtual ~ResourceManager();
 
 protected:
-	std::map<std::string, ResourceSet*>	_dataDic;
+	TPL::StlMap<TPL::StlString, ResourceSet*>	_dataDic;
 };
 
 
@@ -660,15 +677,14 @@ struct UserData
 		FLAG_STRING		= 1 << 3
 	};
 
-	const char*	partName;		/// Part name
-	int			frameNo;		/// Frame no
+	TPL::StlString partName;  /// Part name
+	int            frameNo;   /// Frame no
 
-	int			flags;			/// Flags of valid data
-	int			integer;		/// Integer
-	int			rect[4];		/// Rectangle Left, Top, Right, Bottom
-	int			point[2];		/// Position X, Y
-	const char*	str;			/// String (zero terminated)
-	int			strSize;		/// String size (byte count)
+	int            flags;     /// Flags of valid data
+	int            integer;   /// Integer
+	int            rect[4];   /// Rectangle Left, Top, Right, Bottom
+	int            point[2];  /// Position X, Y
+	TPL::StlString str;       /// String (zero terminated)
 };
 
 
@@ -677,7 +693,7 @@ struct UserData
 */
 struct LabelData
 {
-	std::string	str;			/// String (zero terminated)
+	TPL::StlString	str;			/// String (zero terminated)
 	int			strSize;		/// String size (byte count)
 	int			frameNo;		/// Frame no
 };
@@ -946,6 +962,14 @@ enum
 
 //------------------------------------------------------------------------------
 
+/**
+ * PartsMaskInfo
+ */
+struct PartsMaskInfo
+{
+	bool maskFuncFlag;
+	bool disableMask;
+};
 
 /**
  * Player
@@ -979,14 +1003,14 @@ public:
 	 *
 	 * @param  dataKey  再生するデータのdataKey
 	 */
-	void setData(const std::string& dataKey);
+	void setData(const TPL::StlString& dataKey);
 
 	/**
 	* 再生しているssbpデータのdataKeyを取得します.
 	*
 	* @return 再生しているssbp名
 	*/
-	std::string getPlayDataName(void);
+	TPL::StlString getPlayDataName(void);
 
 	/**
 	 * 設定されているssbpデータを解放します.
@@ -1006,7 +1030,7 @@ public:
 	* @param  loop          再生ループ数の指定. 省略時は0
 	* @param  startFrameNo  再生を開始するフレームNoの指定. 省略時は0
 	*/
-	void play(const std::string& ssaeName, const std::string& motionName, int loop = 0, int startFrameNo = 0);
+	void play(const TPL::StlString& ssaeName, const TPL::StlString& motionName, int loop = 0, int startFrameNo = 0);
 
 	/**
 	* アニメーションの再生を開始します.
@@ -1019,35 +1043,7 @@ public:
 	* @param  loop          再生ループ数の指定. 省略時は0
 	* @param  startFrameNo  再生を開始するフレームNoの指定. 省略時は0
 	*/
-	void play(const std::string& animeName, int loop = 0, int startFrameNo = 0);
-
-	/**
-	* 現在再生しているモーションとブレンドしながら再生します。
-	* アニメーション名から再生するデータを選択します.
-	* "ssae名/モーション名で指定してください.
-	* sample.ssaeのanime_1を指定する場合、sample/anime_1となります.
-	* ※ver1.1からモーション名のみで指定する事はできなくなりました。
-	*
-	* ブレンドするアニメーションの条件は以下になります。
-	* ・同じssbp内に含まれている事
-	* ・同じパーツ構成（パーツ順、パーツ数）である事
-	* SpriteStudioのフレームコントロールに並ぶパーツを上から順にブレンドしていきます。
-	* パーツ名等のチェックは行なっていませんので遷移元と遷移先アニメのパーツの順番を同じにする必要があります。
-	* 遷移元と遷移先のパーツ構成があっていない場合、正しくブレンドされませんのでご注意ください。
-	*
-	* 合成されるアトリビュートは
-	* 座標X、座標Y、X回転、Y回転、Z回転、スケールX、スケールYのみです。
-	* それ以外のアトリビュートは遷移先アニメの値が適用されます。
-	* インスタンスパーツが参照しているソースアニメはブレンドされません。
-	* エフェクトパーツから発生したパーティクルはブレンドされません。
-	* 
-	*
-	* @param  animeName     再生するアニメーション名
-	* @param  loop          再生ループ数の指定. 省略時は0
-	* @param  startFrameNo  再生を開始するフレームNoの指定. 省略時は0
-	* @param  blendTime		モーションブレンドを行う時間、単位は秒　省略時は1秒
-	*/
-	void motionBlendPlay(const std::string& animeName, int loop = 0, int startFrameNo = 0, float blendTime = 0.1f);
+	void play(const TPL::StlString& animeName, int loop, int startFrameNo, PartsMaskInfo partsMaskInfo, bool createChildPlayers);
 
 	/**
 	 * 再生を中断します.
@@ -1071,14 +1067,14 @@ public:
 	 *
 	 * @return パック名(ssae)
 	 */
-	const std::string& getPlayPackName() const;
+	const TPL::StlString& getPlayPackName() const;
 
 	/**
 	 * 再生しているアニメーション名を返します.
 	 *
 	 * @return アニメーション名
 	 */
-	const std::string& getPlayAnimeName() const;
+	const TPL::StlString& getPlayAnimeName() const;
 	
 	/**
 	* アニメーションの開始フレームを取得します.
@@ -1210,7 +1206,7 @@ public:
 	* コリジョン用のパーツや差し替えグラフィック等、SS上で表示を行うがゲーム中では非表示にする場合に使用します。
 	* SSの非表示アトリビュート設定するわけではないので注意してください。
 	*/
-	void setPartVisible(std::string partsname, bool flg);
+	void setPartVisible(TPL::StlString partsname, bool flg);
 
 	/**
 	* パーツ名からパーツに割り当たるセルを変更します.
@@ -1221,7 +1217,7 @@ public:
 	* @param  sscename          セルマップ名
 	* @param  cellname          表示させたいセル名
 	*/
-	void setPartCell(std::string partsname, std::string sscename, std::string cellname);
+	void setPartCell(TPL::StlString partsname, TPL::StlString sscename, TPL::StlString cellname);
 
 	/*
 	* プレイヤー本体の位置を設定します。
@@ -1278,7 +1274,7 @@ public:
 	* @param  overWrite			インスタンスキーの上書きフラグ
 	* @param  keyParam			インスタンスキーのパラメータ
 	*/
-	bool changeInstanceAnime(std::string partsname, std::string animeName, bool overWrite, Instance keyParam);
+	bool changeInstanceAnime(TPL::StlString partsname, TPL::StlString animeName, bool overWrite, Instance keyParam);
 
 	/*
 	* プレイヤーにインスタンスパラメータを設定します。
@@ -1427,16 +1423,15 @@ public:
 	bool init();
 
 	State getState( void );
-	void* getExParamDraw(void) { return _exParamDraw; };
 
 protected:
 	void allocParts(int numParts, bool useCustomShaderProgram);
 	void releaseParts();
-	void setPartsParentage();
+	void setPartsParentage(bool maskFuncFlag, bool disableMask, bool createChildPlayers);
 
 	void play(AnimeRef* animeRef, int loop, int startFrameNo);
 	void updateFrame(float dt);
-	void setFrame(int frameNo, float dt = 0.0f);
+	void setFrame(float frameNo, float dt = 0.0f);
 	void checkUserData(int frameNo);
 	float parcentVal(float val1, float val2, float parcent);
 	float parcentValRot(float val1, float val2, float parcent);
@@ -1446,17 +1441,14 @@ protected:
 protected:
 	ResourceManager*	_resman;
 	ResourceSet*		_currentRs;
-	std::string			_currentdataKey;
-	std::string			_currentAnimename;
+	TPL::StlString			_currentdataKey;
+	TPL::StlString			_currentAnimename;
 	AnimeRef*			_currentAnimeRef;
-	std::vector<CustomSprite *>	_parts;
-
-	Player*				_motionBlendPlayer;
-	float				_blendTime;
-	float				_blendTimeMax;
+	TPL::StlVector<CustomSprite *>	_parts;
 
 	bool				_frameSkipEnabled;
 	float				_playingFrame;
+	char        pad_0078[0x0004];
 	float				_step;
 	int					_loop;
 	int					_loopCount;
@@ -1464,9 +1456,13 @@ protected:
 	bool				_isPausing;
 	bool				_isPlayFirstUserdataChack;
 	int					_prevDrawFrameNo;
-	bool				_partVisible[PART_VISIBLE_MAX];
-	int					_cellChange[PART_VISIBLE_MAX];
-	int					_partIndex[PART_VISIBLE_MAX];
+
+	/* `APP_DRAW_TYPE` seems like it is used to control the visibility of an element, so we
+		 will assume the field name is the same.
+	*/
+	fw::StaticArray<fw::ui::APP_DRAW_TYPE, PART_VISIBLE_MAX> _partVisible;
+	fw::StaticArray<char, PART_VISIBLE_MAX>									 _partIndex;
+
 	int					_animefps;
 	int					_col_r;
 	int					_col_g;
@@ -1479,7 +1475,8 @@ protected:
 	int					_draw_count;					//表示スプライト数
 
 	UserData			_userData;
-
+	
+	char 				pad_0B50[0x0010];
 	State				_state;
 
 	float				_parentMat[16];					//プレイヤーが持つ継承されたマトリクス
@@ -1487,16 +1484,12 @@ protected:
 	bool				_maskParentSetting;				//親パーツのマスク対象（インスタンスのみ使用する）
 	bool				_maskFuncFlag;					//マスク機能を有効にするか？（インスタンスのソースアニメはマスクが無効になる）
 
-	std::vector<CustomSprite *> _maskIndexList;			//マスク対象となるパーツ
-
-	int _direction;										//プレイヤーの座標系設定
-	int _window_w;
-	int _window_h;
+	TPL::StlVector<CustomSprite *> _maskIndexList;			//マスク対象となるパーツ
 
 	UserDataCallback	_userDataCallback;
 	PlayEndCallback		_playEndCallback;
 
-	void*				_exParamDraw;					//描画に渡す拡張パラメータ
+	char pad_0DB0[0x0060];
 };
 
 

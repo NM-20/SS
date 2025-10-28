@@ -6,6 +6,7 @@
 #include <vector>
 #include <math.h>
 #include <algorithm>
+#include <TPL/GenericLibrary/STL/TPLStlAllocate.h>
 
 namespace ss
 {
@@ -25,7 +26,7 @@ namespace ss
 //===============================================================
 
 //文字列の設定
-typedef std::string SsString;
+typedef TPL::StlString SsString;
 
 
 
@@ -332,12 +333,12 @@ struct ToLower {
     char operator()(char c) { return tolower(c); }
 };
 ///与えられた文字列をカラー値に変換するための関数
-inline void	ConvertStringToSsColor( const std::string& str , SsColor& out)
+inline void	ConvertStringToSsColor( const TPL::StlString& str , SsColor& out)
 {
 	char *endptr;
 	unsigned long x;
 
-	std::string temp = "0x";
+	TPL::StlString temp = "0x";
 	temp+=str;
 	
 	transform(temp.begin(), temp.end(), temp.begin(), ToLower());
@@ -687,7 +688,7 @@ public:
 struct SsRefCell
 {
 	int			mapid;
-	std::string	name;
+	TPL::StlString	name;
 
 	
 };
