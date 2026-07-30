@@ -92,7 +92,7 @@ https://github.com/SpriteStudio/SpriteStudio6-SDK
 #include <assert.h>
 #include <time.h>
 #include <functional>
-#include <framework/ui/system/APP_DRAW_TYPE.h>
+#include <framework/ui/system/AppDrawType.h>
 #include <utility/container/StaticArray.h>
 #include <TPL/GenericLibrary/STL/TPLStlAllocate.h>
 
@@ -329,8 +329,7 @@ struct State
 class CustomSprite
 {
 private:
-
-private:
+	char 				pad_0008[0x0008];
 	float				_opacity;
 	int					_hasPremultipliedAlpha;
 	bool				_flipX;
@@ -354,6 +353,8 @@ public:
 	SsEffectRenderV2*	refEffect;
 	SsPartState			partState;
 
+	char pad_03B8[0x0018];
+
 	//モーションブレンド用ステータス
 	State				_orgState;
 
@@ -361,16 +362,7 @@ public:
 	bool effectAttrInitialized;
 	float effectTimeTotal;
 
-	//メッシュ情報
-	bool					_meshIsBind;		//バインドされたメッシュか？
-	int						_meshVertexSize;	//メッシュの頂点サイズ
-	TPL::StlVector<SsVector2>	_meshVertexUV;		//メッシュのUV
-	TPL::StlVector<SsVector3>	_meshIndices;		//メッシュの頂点順
-	float*					_mesh_uvs;			// UVバッファ
-	float*					_mesh_colors;		// カラーバッファ
-	float*					_mesh_vertices;		// 座標バッファ
-	int						_meshTriangleSize;	//トライアングルのサイズ
-	unsigned short*			_mesh_indices;		// 頂点順
+	char pad_0548[0x0008];
 
 public:
 	CustomSprite();
@@ -1489,7 +1481,9 @@ protected:
 	UserDataCallback	_userDataCallback;
 	PlayEndCallback		_playEndCallback;
 
-	char pad_0DB0[0x0060];
+	char 			  pad_0DB0[0x0050];
+	void*				_exParamDraw;					//描画に渡す拡張パラメータ
+	char 				pad_0E08[0x0008];
 };
 
 

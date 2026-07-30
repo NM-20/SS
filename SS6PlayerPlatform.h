@@ -19,6 +19,30 @@ namespace ss
 	class Player;
 	class CustomSprite;
 
+	/**
+	* 描画ステータス
+	*/
+	struct SSDrawState
+	{
+		int texture;
+		int partType;
+		int partBlendfunc;
+		int partsColorUse;
+		int partsColorFunc;
+		int partsColorType;
+		int maskInfluence;
+		void init(void)
+		{
+			texture = -1;
+			partType = -1;
+			partBlendfunc = -1;
+			partsColorUse = -1;
+			partsColorFunc = -1;
+			partsColorType = -1;
+			maskInfluence = -1;
+		}
+	};
+
 	extern void SSPlatformInit(void);
 	extern void SSPlatformRelese(void);
 	extern void SSSetPlusDirection(int direction, int window_w, int window_h);
